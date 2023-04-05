@@ -5,10 +5,11 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
 
+#class for combined widget 
 class CombinedWidget(QWidget):
     def __init__(self):
         super().__init__()
-
+        #toggle for style sheets to make it possible to go back-forf
         self.style_sheet=True
         # Create instances of Calculator and Clock
         self.clock = Clock()
@@ -17,16 +18,18 @@ class CombinedWidget(QWidget):
         layout = QHBoxLayout()
         layout.addWidget(self.calculator)
         layout.addWidget(self.clock)
-
+        #clcked buttons
         self.calculator.ui.change_clock.clicked.connect(self.clock.toggle)
         self.calculator.ui.change_stylesheet.clicked.connect(self.toggle_styles)
         self.setLayout(layout)
 
-
+    #toggle function for styles 
     def toggle_styles(self):
         self.style_sheet=not self.style_sheet
         self.changestyles()
+    #changin styles 
     def changestyles(self):
+        # if toggle is true then this style else other
         if self.style_sheet:
             self.setStyleSheet("background-color:blue")
             self.calculator.setStyleSheet("""
@@ -36,6 +39,7 @@ class CombinedWidget(QWidget):
                 QPlainTextEdit{color:black}
                 QPlainTextEdit{font:bold}
             """)
+            #styles for clocks
             self.clock.change_colors(Qt.green, Qt.red, Qt.white)  # Added digital clock font color
         else:
             self.setStyleSheet("background-color:cyan")
@@ -54,10 +58,13 @@ class CombinedWidget(QWidget):
 class Calculator(QWidget):
     def __init__(self):
         super(Calculator,self).__init__()
+        #.ui setup
         self.ui=Ui_Form()
         self.ui.setupUi(self)
+        #inicializing stack 
         self.stack=[]
         self.result=0
+        #buttons
         self.ui.button_0.clicked.connect(lambda: self.onButtonClicked("0")) 
         self.ui.button_1.clicked.connect(lambda: self.onButtonClicked("1"))  
         self.ui.button_2.clicked.connect(lambda: self.onButtonClicked("2"))  
@@ -75,10 +82,9 @@ class Calculator(QWidget):
         self.ui.button_div.clicked.connect(lambda: self.onButtonClicked("/"))
         self.ui.button_plus.clicked.connect(lambda: self.onButtonClicked("+"))
         self.ui.button_minus.clicked.connect(lambda: self.onButtonClicked("-"))
-        #self.ui.change_clock.clicked.connect(clock.toggle)
         self.ui.buttonequal.clicked.connect(self.equal)
         self.ui.plainTextEdit.setReadOnly(True)
-      
+    #key presses with same functionality
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_0:
             self.onButtonClicked("0")
@@ -116,28 +122,41 @@ class Calculator(QWidget):
             self.onButtonClicked("/")
         elif e.key() == Qt.Key_Equal:
             self.equal()
-
+    #if button clicked or key pushed do onButtonClicked
     def onButtonClicked(self,number):  
+        #append str(number) to stack
         self.stack.append(number)
+        #make it one long string
         text = "".join(str(n) for n in self.stack)
+        #update text
         self.updatetext(text)
     def updatetext(self,text):
+        #clear whats on text field
         self.ui.plainTextEdit.clear()
+        #add everything from our long string
         self.ui.plainTextEdit.appendPlainText(text)
     def erase(self):
+        #pop last str(number)
         self.stack.pop()
+        #join everything
         text = "".join(str(n) for n in self.stack)
+        #update
         self.updatetext(text)
     def clear(self):
+        #clear text field and stack
         self.ui.plainTextEdit.clear()
         self.stack.clear()
+
     def equal(self):  
+        #join stack to one string
         expression = "".join(self.stack)
+        #evaluate string with eval()
         self.result = eval(expression)
         self.updatetext(str(self.result))
 class Clock(QWidget):
     def __init__(self):
         super().__init__()
+        #toggle for picking type of clock
         self.is_analog=True
         # creating a timer object
         timer = QTimer(self)
