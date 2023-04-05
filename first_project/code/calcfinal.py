@@ -160,22 +160,28 @@ class Clock(QWidget):
         self.is_analog=True
         # creating a timer object
         timer = QTimer(self)
+        #style for clock
         self.clock_style = Qt.white
         timer.timeout.connect(self.update)
-  
+        #start timer 
         timer.start(1000)
+        #initialize analog clock as default
         self.initializeclock()
-
+    #change colors of polygons and digital clock
     def change_colors(self, b_color, s_color, clock_font_color):
+        #analog
         self.bColor = b_color
         self.sColor = s_color
+        #digital
         self.clock_style = clock_font_color  # Update the digital clock font color
+        #update it
         self.update()
-
+    #toogle for which clock to pick
     def toggle(self):
         self.is_analog=not self.is_analog
         self.update()
     def initializeclock(self):
+        #create hour hand
         self.hPointer = QPolygon([QPoint(6, 7),
                                         QPoint(-6, 7),
                                         QPoint(0, -50)])
@@ -196,15 +202,19 @@ class Clock(QWidget):
         # color for second hand
         self.sColor = Qt.red
     
-
+    #draw digital clock
     def draw_digital_clock(self, event):
+        #summon painter
         painter = QPainter(self)
+        #check time
         current_time = QTime.currentTime()
+        #time to string
         time_text = current_time.toString('hh:mm:ss')
         font = QFont('Arial', 20, QFont.Bold)
         painter.setFont(font)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setPen(self.clock_style)  # Set the font color using clock_style
+        #draw current time 
         painter.drawText(event.rect(), Qt.AlignCenter, time_text)
     def draw_analog_clock(self,event):
         # getting minimum of width and height
@@ -250,7 +260,7 @@ class Clock(QWidget):
             painter.rotate(6)
         # ending the painter
         painter.end()
-
+    #handle for which clock to draw
     def paintEvent(self, event):
         if self.is_analog:
             self.draw_analog_clock(event)
