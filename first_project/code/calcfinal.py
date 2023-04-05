@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 import sys
 from calculator3_ui import Ui_Form
-from PySide6.QtCore import QFile
+from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
 
@@ -79,6 +79,43 @@ class Calculator(QWidget):
         self.ui.buttonequal.clicked.connect(self.equal)
         self.ui.plainTextEdit.setReadOnly(True)
       
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_0:
+            self.onButtonClicked("0")
+        if e.key() == Qt.Key_1:
+            self.onButtonClicked("1")
+        if e.key() == Qt.Key_2:
+           self.onButtonClicked("2")
+        if e.key() == Qt.Key_3:
+            self.onButtonClicked("3")
+        if e.key() == Qt.Key_4:
+            self.onButtonClicked("4")
+        if e.key() == Qt.Key_5:
+           self.onButtonClicked("5")
+        if e.key() == Qt.Key_6:
+            self.onButtonClicked("6")
+        if e.key() == Qt.Key_7:
+            self.onButtonClicked("7")
+        if e.key() == Qt.Key_8:
+           self.onButtonClicked("8")
+        if e.key() == Qt.Key_9:
+           self.onButtonClicked("9")
+        if e.key() == Qt.Key_Comma or e.key() == Qt.Key_Period:
+            self.onButtonClicked(".")
+        if e.key() == Qt.Key_Backspace:
+            self.erase()
+        if e.key() == Qt.Key_C:
+            self.clear()
+        elif e.key() == Qt.Key_Plus:
+            self.onButtonClicked("+")
+        elif e.key() == Qt.Key_Minus:
+            self.onButtonClicked("-")
+        elif e.key() == Qt.Key_Asterisk:
+            self.onButtonClicked("*")
+        elif e.key() == Qt.Key_Slash:
+            self.onButtonClicked("/")
+        elif e.key() == Qt.Key_Equal:
+            self.equal()
 
     def onButtonClicked(self,number):  
         self.stack.append(number)
@@ -154,66 +191,44 @@ class Clock(QWidget):
         # getting minimum of width and height
         # so that clock remain square
         rec = min(self.width(), self.height())
-  
         # getting current time
         tik = QTime.currentTime()
-  
         # creating a painter object
         painter = QPainter(self)
-  
-  
         # method to draw the hands
         # argument : color rotation and which hand should be pointed
         def drawPointer(color, rotation, pointer):
-  
             # setting brush
             painter.setBrush(QBrush(color))
-  
             # saving painter
             painter.save()
-  
             # rotating painter
             painter.rotate(rotation)
-  
             # draw the polygon i.e hand
             painter.drawConvexPolygon(pointer)
-  
             # restore the painter
             painter.restore()
-  
-  
         # tune up painter
         painter.setRenderHint(QPainter.Antialiasing)
-  
         # translating the painter
         painter.translate(self.width() / 2, self.height() / 2)
-  
         # scale the painter
         painter.scale(rec / 200, rec / 200)
-  
         # set current pen as no pen
         painter.setPen(Qt.NoPen)
-  
-  
         # draw each hand
         drawPointer(self.bColor, (30 * (tik.hour() + tik.minute() / 60)), self.hPointer)
         drawPointer(self.bColor, (6 * (tik.minute() + tik.second() / 60)), self.mPointer)
         drawPointer(self.sColor, (6 * tik.second()), self.sPointer)
-  
-  
         # drawing background
         painter.setPen(QPen(self.bColor))
-  
         # for loop
         for i in range(0, 60):
-  
             # drawing background lines
             if (i % 5) == 0:
                 painter.drawLine(87, 0, 97, 0)
-  
             # rotating the painter
             painter.rotate(6)
-  
         # ending the painter
         painter.end()
 
