@@ -293,7 +293,7 @@ class Complex_test(QWidget):
         self.player = QMediaPlayer()
         self.audioOutput = QAudioOutput()
         self.player.setAudioOutput(self.audioOutput)
-        self.sounds = {"high": "high_pitch.wav", "low": "low_pitch.wav"}
+        self.sounds = {"high": "sound_effects/high_pitch.wav", "low": "sound_effects/low_pitch.wav"}
         
         self.colors = {"high": "green", "low": "red"}
         self.sound_combination = None
@@ -412,7 +412,7 @@ class Sounds(QWidget):
         self.layout.addWidget(self.reaction_button)
         self.setLayout(self.layout)
 
-        self.songs = ["test.wav", "piano.wav", "top.wav"]
+        self.songs = ["sound_effects/test.wav", "sound_effects/piano.wav", "sound_effects/top.wav"]
         self.volume_increase_timer=QTimer()
         self.volume_increase_timer.timeout.connect(self.increase_volume)
         self.player=QMediaPlayer()
@@ -439,7 +439,7 @@ class Sounds(QWidget):
         self.audioOutput = QAudioOutput()
         self.player.setAudioOutput(self.audioOutput)
         if self.test_mode:
-            self.player.setSource(QUrl.fromLocalFile("ambulance.wav"))
+            self.player.setSource(QUrl.fromLocalFile("sound_effects/ambulance.wav"))
         else:
             
             song_to_play = random.choice(self.songs)
