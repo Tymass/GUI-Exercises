@@ -25,7 +25,7 @@ class MainWindow(QWidget):
         self.setMinimumSize(500, 500)
 
         layout = QVBoxLayout()
-
+        #stylesheet picked
         welcome_label = QLabel("Welcome to Psychio Tests!")
         welcome_label.setAlignment(Qt.AlignCenter)
         welcome_label.setStyleSheet("""
@@ -37,6 +37,7 @@ class MainWindow(QWidget):
             margin-bottom: 10px;
             background-color: #ffffff;
         """)
+        #initializing varaibles to store from our tests
         self.color_times = None
         self.sound_times = None
         self.errors = None
@@ -53,7 +54,7 @@ class MainWindow(QWidget):
             margin-bottom: 10px;
             background-color: #ffffff;
         """)
-
+        #adding buttons
         layout2 = QHBoxLayout()
         self.radio_red_green = QPushButton("Optical reaction test")
         self.radio_sounds = QPushButton("Hearing reaction test")
@@ -85,7 +86,7 @@ class MainWindow(QWidget):
         layout.addWidget(self.evalute)
         self.setLayout(layout)
 
-        # Connect the button's clicked signal to the open_green_and_red function
+        # Connect the button's clicked signal to the their functions
         self.radio_red_green.clicked.connect(self.open_green_and_red)
         self.green_and_red = None
         self.radio_sounds.clicked.connect(self.open_sounds)
@@ -95,6 +96,7 @@ class MainWindow(QWidget):
 
         self.evalute.clicked.connect(self.open_evaluation)
         self.evaluation=None
+        #open window with tests functions
     def open_complex(self):
         if self.complex is None or not self.complex.isVisible():
             self.complex=Complex_test()
@@ -125,7 +127,7 @@ class MainWindow(QWidget):
         if self.evaluation is None or not self.evaluation.isVisible():
             self.evaluation= Evaluate(self.color_times,self.sound_times,self.errors,self.complex_times)
             self.evaluation.show()
-
+#class for evaluation
 class Evaluate(QWidget):
     def __init__(self,process_color_results,sound_times,errors,complex_times):
         super().__init__()
@@ -138,11 +140,11 @@ class Evaluate(QWidget):
         layout.addWidget(NavigationToolbar(static_canvas, self))
         layout.addWidget(static_canvas)
         
-       # proportions = [0.6, 0.75, 0.8]##
-
+        #calculate proportions and average values
         proportions,avg_clr,avg_snd,avg_cplx = self.calculate_proportions(process_color_results,sound_times,errors,complex_times)
-        print(proportions)
+
         labels = ['optical reaction', 'sound reaction', 'awerness']
+        ##Polar Graph code
         N = len(proportions)
         proportions = np.append(proportions, 1)
         theta = np.linspace(0, 2 * np.pi, N, endpoint=False)
@@ -165,7 +167,9 @@ class Evaluate(QWidget):
         self._static_ax.axis('off')
         self._static_ax.set_aspect('equal')
         
-       
+       ##
+
+       ## Labels with results and some stylesheets
         label_style = """
             font-size: 20pt;
             color: #334455;
@@ -196,11 +200,9 @@ class Evaluate(QWidget):
         error_label.setStyleSheet(label_style)
         layout.addWidget(error_label)
 
-
-
-
-        
         self.setLayout(layout)
+
+        #simple normalization function for values from tests
     def calculate_proportions(self, process_color_results, sound_times, errors, complex_times):
         # Define maximum possible values
         max_time = 2.5  # Assuming 2.5 sec as the maximum potential time
@@ -231,8 +233,9 @@ class Evaluate(QWidget):
 
 
 
-
+#class complex test
 class Complex_test(QWidget):
+    #Signal to send to Main Class when test is over
     test_completed=Signal(list,int)
     def __init__(self):
         super().__init__()
@@ -280,6 +283,7 @@ class Complex_test(QWidget):
         self.layout.addWidget(self.reaction_button)
         self.setLayout(self.layout)
 
+        #counter of wrong answers
         self.wrong_option=0
 
         self.timer = QTimer()
@@ -302,15 +306,17 @@ class Complex_test(QWidget):
         self.test_button.clicked.connect(self.test_modefun)
         self.reaction_button.clicked.connect(self.check_reaction)
         self.timeout=False
+        #timer timeout for in between games
     def timer_timeout(self):
         self.timeout=True
         self.player.stop()
         self.reaction_button.setStyleSheet(f"background-color: white")
         self.timer2.stop()
         self.check_reaction()
+        #play music and initialize game after timer runs out
     def play_sound_and_change_color(self):
         self.timer.stop()   
-
+        #second timer to stop if combinations do not match
         self.timer2.start(5000)
         self.start_time=time.time()
         self.sound_combination = random.choice(list(self.sounds.keys()))
@@ -320,15 +326,16 @@ class Complex_test(QWidget):
         self.reaction_button.setEnabled(True)
         self.player.play()
         self.start_time=time.time()
-
+    #starting game
     def start_game(self):
         self.reaction_button.setStyleSheet("background-color: white")
         self.timer.start(random.randint(2000, 5000))
+    #for test mode
     def test_modefun(self):
         self.complex_reaction_times=[]
         self.test_mode=True
         self.start_game()
-
+    #evaluate user answers
     def check_reaction(self):
         if self.sound_combination==self.color_combination and self.timeout==False:
             self.player.stop()
@@ -352,7 +359,7 @@ class Complex_test(QWidget):
             self.timeout=False
         if len(self.complex_reaction_times)<3:
             self.start_game()
-        elif len(self.complex_reaction_times)==3 and self.test_mode==False:
+        elif len(self.complex_reaction_times)==3 and self.test_mode==False:   #if len is enoguh then we stop the loop
             print("All tests completed, please refer to main page!")
             self.test_completed.emit(self.complex_reaction_times,self.wrong_option)
             self.reaction_button.setEnabled(False)
@@ -362,6 +369,7 @@ class Complex_test(QWidget):
             self.test_mode=False
             self.complex_reaction_times=[]
             self.reaction_button.setEnabled(False)
+# sounds class for test
 class Sounds(QWidget):
     test_completed = Signal(list)  
     def __init__(self):
