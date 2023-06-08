@@ -6,14 +6,14 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, shared_dict):
+    def __init__(self, signal, color):
         super().__init__()
 
-        #self.signal = signal
+        self.color = color
+        self.signal = signal
         # Create a Matplotlib figure and canvas
         self.figure = plt.Figure()
         self.canvas = FigureCanvas(self.figure)
-        self.shared_dict = shared_dict
 
         # Set up the main window
         self.setWindowTitle("Real-Time Plot")
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.x = []
         self.y = []
 
-        self.line, = self.ax.plot([], [], 'b-')
+        self.line, = self.ax.plot([], [], self.color)
 
         # Start the real-time plot
         self.index = 0
@@ -41,15 +41,14 @@ class MainWindow(QMainWindow):
 
         self.timer.add_callback(self.update_plot)
         self.timer.start()
-        # if self.signal == 1:
-        #    self.timer.stop()
-        if self.shared_dict['engine_mode'] == 1:
+        if self.signal == 1:
             self.timer.stop()
 
     def update_plot(self):
         # Read the last line from the file
         try:
             with open("engine_data.txt", "r") as file:
+                # file.seek(0)
                 lines = file.readlines()
                 if lines:
                     last_line = lines[-1]
