@@ -1,16 +1,16 @@
-import sys
-import random
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, signal, color):
+    def __init__(self, signal, color, path, xlabel):
         super().__init__()
 
         self.color = color
         self.signal = signal
+        self.path = path
+        self.xlabel = xlabel
         # Create a Matplotlib figure and canvas
         self.figure = plt.Figure()
         self.canvas = FigureCanvas(self.figure)
@@ -26,7 +26,8 @@ class MainWindow(QMainWindow):
         self.ax.set_xlim(0, 100)
         self.ax.set_ylim(0, 500)
         self.ax.grid()
-        # self.setGrid(True)
+        self.ax.set_ylabel(self.xlabel)
+        self.ax.set_xlabel('Time step [s]')
 
         # Generate the line data
         self.x = []
@@ -47,7 +48,7 @@ class MainWindow(QMainWindow):
     def update_plot(self):
         # Read the last line from the file
         try:
-            with open("engine_data.txt", "r") as file:
+            with open(self.path, "r") as file:
                 # file.seek(0)
                 lines = file.readlines()
                 if lines:
@@ -67,8 +68,8 @@ class MainWindow(QMainWindow):
         if self.y:
             self.line.set_data(self.x, self.y)
             # Update the x-axis limit
-            if self.x[-1] > 200:
-                self.ax.set_xlim(self.x[-1] - 200, self.x[-1])
+            if self.x[-1] > 100:
+                self.ax.set_xlim(self.x[-1] - 100, self.x[-1])
             else:
                 self.ax.set_xlim(0, self.x[-1])
 
